@@ -89,7 +89,7 @@ export const AuthProvider = ({ children }) => {
     }
   }, []);
 
-  const logout = () => {
+  const logout = async () => {
 
         try {
       await signOut(auth);
