@@ -6,6 +6,7 @@ import API_BASE_URL from "../lib/api";
 import { Play, ChevronDown, ChevronUp, X } from "lucide-react";
 import toast from "react-hot-toast";
 import { loadRazorpayScript } from "../lib/loadRazorpay";
+import CourseFeedback from "../components/common/CourseFeedback";
 /* safe getter */
 function safeGet(obj, path, fallback = undefined) {
     if (!obj || !path) return fallback;
@@ -80,14 +81,21 @@ export default function CoursePreview() {
             try {
                 const metaUrl = `${API_BASE_URL}/api/courses/${courseId}`;
                 const learnUrl = `${API_BASE_URL}/api/courses/${courseId}/learning`;
+                const token = localStorage.getItem("token");
+                const headers = token ? { Authorization: `Bearer ${token}` } : {};
                 const [metaRes, learnRes] = await Promise.all([
-                    fetch(metaUrl),
-                    fetch(learnUrl),
+                    fetch(metaUrl, { headers }),
+                    fetch(learnUrl, { headers }),
                 ]);
                 if (!metaRes.ok) throw new Error("Failed to fetch course meta");
-                if (!learnRes.ok) throw new Error("Failed to fetch course learning");
                 const meta = await metaRes.json();
-                const learning = await learnRes.json();
+                let learning = null;
+                // Safely handle the 403 Forbidden without crashing
+                if (learnRes.ok) {
+                    learning = await learnRes.json();
+                } else {
+                    console.log("User preview mode: Learning data locked until purchase.");
+                }
                 if (!cancelled) {
                     setCourseMeta(meta || {});
                     setLearningData(learning || {});
@@ -776,6 +784,9 @@ export default function CoursePreview() {
                                 )}
                             </div>
                         </div>
+
+                        {/* Course Feedback & Ratings */}
+                        <CourseFeedback courseId={courseId} />
                     </div>
                     {/* RIGHT: image (top) then Buy Now (below) */}
                     <div className="lg:col-span-4 flex flex-col items-stretch">
