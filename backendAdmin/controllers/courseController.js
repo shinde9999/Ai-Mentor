@@ -282,7 +282,7 @@ export const generateCourseSyllabusWithAI = async (req, res) => {
     }
 
     // Call Python AI Service
-    const aiUrl = "http://127.0.0.1:8000/generate-syllabus";
+    const aiUrl = `${process.env.AI_SERVICE_URL}/generate-syllabus`;
     const aiResponse = await fetch(aiUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
