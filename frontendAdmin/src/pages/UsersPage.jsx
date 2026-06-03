@@ -216,7 +216,7 @@ const [statusFilter, setStatusFilter] = useState("all");
         email: admin.email,
         role: admin.role || "admin",
         type: "admin",
-        status: "active", // Admins are always active for now
+        status: admin.status || "active",
         createdAt: admin.createdAt,
       }));
 
@@ -272,13 +272,25 @@ useEffect(() => {
 } else if (action === "active" || action === "on-hold") {
       try {
         if (account.type === "admin") {
-          showToast("Admin status cannot be changed yet.", "warning");
-          return;
+          if (currentAdmin?.id && account.rawId === currentAdmin.id) {
+            showToast("You cannot suspend yourself.", "warning");
+            return;
+          }
+          if (account.role === "superadmin") {
+            showToast("Super admin status cannot be changed.", "warning");
+            return;
+          }
         }
-        await callApi(`/admin/users/${account.rawId}/status`, {
+        const endpoint =
+          account.type === "admin"
+            ? `/admin/admins/${account.rawId}/status`
+            : `/admin/users/${account.rawId}/status`;
+
+        await callApi(endpoint, {
           method: "PATCH",
           body: JSON.stringify({ status: action }),
         });
+        showToast(`Account status updated to ${action}`, "success");
         fetchAccounts();
       } catch (err) {
         showToast("Failed to update status: " + err.message, "error");
@@ -292,7 +304,7 @@ useEffect(() => {
     // Prevent self delete
     if (
       currentAdmin?.id &&
-      Number(account.rawId) === Number(currentAdmin.id)
+      account.rawId === currentAdmin.id
     ) {
       showToast("You cannot delete yourself.", "warning");
       return;

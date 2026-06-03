@@ -29,6 +29,10 @@ const Admin = sequelize.define(
       type: DataTypes.ENUM("superadmin", "admin"),
       defaultValue: "admin",
     },
+    status: {
+      type: DataTypes.ENUM("active", "on-hold"),
+      defaultValue: "active",
+    },
   },
   {
     timestamps: true,
