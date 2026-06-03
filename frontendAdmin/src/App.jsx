@@ -1,3 +1,4 @@
+import { jwtDecode } from "jwt-decode";
 import { useMemo, useState, useEffect } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import Header from "./components/Header";
@@ -32,6 +33,25 @@ const PAGE_COMPONENTS = {
 function App() {
   const location = useLocation();
   const token = localStorage.getItem("token");
+
+let isAuthenticated = false;
+
+try {
+  if (token) {
+    const decoded = jwtDecode(token);
+
+    const now = Date.now() / 1000;
+
+    const notExpired = decoded.exp && decoded.exp > now;
+    const isAdmin =
+  decoded.role === "admin" ||
+  decoded.role === "superadmin";
+
+    isAuthenticated = notExpired && isAdmin;
+  }
+} catch (err) {
+  isAuthenticated = false;
+}
   const [page, setPage] = useState("courses");
   const [mobileNav, setMobileNav] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -51,9 +71,10 @@ function App() {
     return <LoginPage />;
   }
 
-  if (!token) {
-    return <Navigate to="/login" replace />;
-  }
+  if (!isAuthenticated) {
+  localStorage.removeItem("token");
+  return <Navigate to="/login" replace />;
+}
 
   return (
     <ToastProvider>
