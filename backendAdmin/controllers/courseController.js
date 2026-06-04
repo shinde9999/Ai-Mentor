@@ -1,4 +1,5 @@
 import { Course, AdminNotification, Module, Lesson, User } from "../models/index.js";
+import { Op } from "sequelize";
 
 // Valid status values
 const VALID_STATUSES = ["published", "disabled", "deleted"];
@@ -10,7 +11,18 @@ const VALID_STATUSES = ["published", "disabled", "deleted"];
  */
 export const getAllCourses = async (req, res) => {
   try {
+    const { search } = req.query;
+
+    const where = {};
+    if (search) {
+      where[Op.or] = [
+        { title: { [Op.iLike]: `%${search}%` } },
+        { category: { [Op.iLike]: `%${search}%` } }
+      ];
+    }
+
     const courses = await Course.findAll({
+      where,
       attributes: ["id", "title", "category", "priceValue", "currency", "status", "createdAt", "updatedAt"],
       order: [["createdAt", "DESC"]],
     });
