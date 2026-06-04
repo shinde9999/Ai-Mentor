@@ -58,7 +58,7 @@ const Dashboard = () => {
         const statsRes   = statsResult.status  === "fulfilled" ? statsResult.value  : null;
         const res        = certResult.status   === "fulfilled" ? certResult.value   : null;
 
-        if (res.ok) {
+        if (res && res.ok) {
           const json = await res.json();
           setData(json);
         }
@@ -75,7 +75,7 @@ const Dashboard = () => {
         const allCourses = await coursesRes.json();
         const { statsCards } = await statsRes.json();
 
-        setCoursesData({ allCourses, statsCards });git 
+        setCoursesData({ allCourses, statsCards });
       } catch (error) {
         console.error("Error fetching dashboard data:", error);
       } finally {

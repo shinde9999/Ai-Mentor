@@ -104,6 +104,7 @@ const hasFetchedProfile = useRef(false);
   useEffect(() => {
     if (isAuthenticated && !hasFetchedProfile.current) {
     hasFetchedProfile.current = true;
+    fetchUserProfile();
     }
   }, [isAuthenticated, fetchUserProfile]);
 
