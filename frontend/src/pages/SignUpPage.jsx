@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff, Lock, Moon, Sun, Check, X } from "lucide-react";
+import { Helmet } from "react-helmet-async";
 import { useTheme } from "../context/ThemeContext";
 import { useAuth } from "../context/AuthContext";
 import AuthLayout from "../components/auth/AuthLayout";
@@ -143,6 +144,15 @@ const SignUpPage = () => {
         </div>
       }
     >
+      <Helmet>
+        <title>Sign Up | UptoSkills</title>
+        <meta 
+          name="description" 
+          content="Create your free UptoSkills account and start learning today." 
+        />
+        <meta property="og:title" content="Sign Up | UptoSkills" />
+        <meta property="og:type" content="website" />
+      </Helmet>
       <form onSubmit={handleSubmit} className="space-y-3">
         {/* 🔹 FIRST & LAST NAME ROW */}
         <div className="grid grid-cols-2 gap-3">
